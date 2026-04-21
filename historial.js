@@ -31,7 +31,7 @@ function renderHistorial() {
 
   if (!records.length) {
     document.getElementById('hist-summary').style.display = 'none';
-    wrap.innerHTML = `<div class="hist-empty"><div class="h-icon">📅</div><p>Sin historial aún</p><small>Registra ventas y presiona "Nuevo Día"</small></div>`;
+    wrap.innerHTML = `<div class="hist-empty"><p>Sin historial aún</p><small>Registra ventas y presiona "Nuevo Día"</small></div>`;
     return;
   }
 
@@ -42,7 +42,9 @@ function renderHistorial() {
   document.getElementById('hist-dias').textContent = records.length;
   document.getElementById('hist-mejor').textContent = fechaCorta(mejorDia.date) + ' · S/. ' + mejorDia.total.toFixed(2);
 
-  wrap.innerHTML = records.map((r, i) => `
+  wrap.innerHTML = `
+    <button class="btn-borrar-historial" onclick="clearHistorial()">Borrar historial</button>
+  ` + records.map((r, i) => `
     <div class="hist-row" onclick="verDetalleDia(${i})">
       <div class="hist-date-badge">
         <div class="hist-day">${r.date.split('-')[2]}</div>
@@ -54,6 +56,14 @@ function renderHistorial() {
       </div>
       <div class="hist-arrow">›</div>
     </div>`).join('');
+}
+
+function clearHistorial() {
+  showConfirm('Borrar historial', 'Se eliminarán todos los registros de días anteriores. Esta acción no se puede deshacer.', () => {
+    localStorage.removeItem(HIST_KEY);
+    renderHistorial();
+    showToast('Historial borrado', 'danger');
+  });
 }
 
 function verDetalleDia(i) {

@@ -267,12 +267,11 @@ body {
 
 /* ═══════════════════════════════ POS ══ */
 .pos-total-bar {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  background: var(--primary);
   border-radius: var(--r);
-  padding: 18px 22px;
+  padding: 16px 22px;
   display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 18px;
-  box-shadow: 0 4px 14px rgba(37,99,235,0.22);
+  margin-bottom: 16px;
 }
 .pos-total-label {
   color: rgba(255,255,255,0.65);
@@ -326,51 +325,49 @@ body {
   background: var(--primary);
   color: white;
   font-family: var(--mono);
-  font-size: 13px; font-weight: 500;
-  width: 28px; height: 28px;
+  font-size: 18px; font-weight: 700;
+  width: 40px; height: 40px;
   border-radius: var(--r-sm);
   display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 2px 6px rgba(37,99,235,0.3);
+  box-shadow: 0 2px 8px rgba(37,99,235,0.35);
   z-index: 2;
 }
 .pos-card.sold .pos-card-count-badge { background: var(--success); }
 
-.pos-card-body { padding: 12px 14px 14px; }
+.pos-card-body { padding: 10px 12px 12px; }
 .pos-card-name {
-  font-size: 13px; font-weight: 500; color: var(--text);
+  font-size: 13px; font-weight: 600; color: var(--text);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  margin-bottom: 2px;
+  margin-bottom: 6px;
+}
+.pos-card-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 6px;
 }
 .pos-card-price { font-size: 12px; font-weight: 400; color: var(--text3); }
-.pos-card-subtotal { font-size: 12px; font-weight: 600; color: var(--success); margin-top: 2px; }
+.pos-card-btns  { display: flex; gap: 5px; flex-shrink: 0; }
+.pos-card-subtotal { font-size: 11px; font-weight: 600; color: var(--success); margin-top: 4px; }
 
-.pos-card-tap {
-  position: absolute; bottom: 10px; right: 10px;
-  width: 28px; height: 28px;
-  border: 1px solid var(--border-md);
-  border-radius: var(--r-sm);
-  background: var(--surface2);
-  color: var(--primary);
-  font-size: 17px; cursor: pointer;
+.pos-btn-add {
+  width: 34px; height: 34px;
+  border: none; border-radius: var(--r-sm);
+  background: var(--primary); color: white;
+  font-size: 20px; font-weight: 700; line-height: 1;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background var(--transition);
+}
+.pos-btn-add:hover { background: var(--primary-dark); }
+
+.pos-btn-undo {
+  width: 34px; height: 34px;
+  border: 1px solid var(--border-md); border-radius: var(--r-sm);
+  background: var(--surface2); color: var(--text3);
+  font-size: 18px; font-weight: 700; line-height: 1;
+  cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   transition: all var(--transition);
-  z-index: 2;
 }
-.pos-card-tap:hover {
-  background: var(--primary);
-  color: white;
-  border-color: var(--primary);
-}
-.pos-card-undo {
-  position: absolute; bottom: 10px; right: 46px;
-  background: none; border: none;
-  color: var(--text3); cursor: pointer;
-  font-size: 12px; padding: 2px 4px;
-  border-radius: 5px;
-  transition: all var(--transition);
-  z-index: 2;
-}
-.pos-card-undo:hover { background: var(--danger-light); color: var(--danger); }
+.pos-btn-undo:hover { background: var(--danger-light); color: var(--danger); border-color: var(--danger); }
 
 .pos-empty {
   text-align: center; padding: 70px 20px;
@@ -954,9 +951,29 @@ body {
 .hist-empty {
   text-align: center; padding: 70px 20px; color: var(--text3);
 }
-.hist-empty .h-icon { font-size: 44px; margin-bottom: 14px; display: block; opacity: 0.3; }
 .hist-empty p { font-size: 14px; font-weight: 500; color: var(--text2); }
 .hist-empty small { font-size: 12px; display: block; margin-top: 4px; }
+
+.btn-borrar-historial {
+  display: block;
+  margin-left: auto;
+  margin-bottom: 14px;
+  padding: 8px 16px;
+  border: 1px solid var(--danger-light);
+  border-radius: var(--r-sm);
+  background: var(--danger-light);
+  color: var(--danger);
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.btn-borrar-historial:hover {
+  background: var(--danger);
+  color: white;
+  border-color: var(--danger-dark);
+}
 
 /* Modal detalle día */
 .dd-stats { display: flex; gap: 10px; margin: 14px 0; }

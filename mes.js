@@ -25,7 +25,7 @@ function renderMes() {
 
   if (!records.length) {
     document.getElementById('mes-stats').innerHTML =
-      `<div class="hist-empty"><div class="h-icon">📈</div><p>Sin ventas en ${NOMBRES_MES[parseInt(m)-1]}</p></div>`;
+      `<div class="hist-empty"><p>Sin ventas en ${NOMBRES_MES[parseInt(m)-1]}</p></div>`;
     document.getElementById('mes-tabla-wrap').innerHTML = '';
     return;
   }
@@ -55,7 +55,7 @@ function renderMes() {
         <div class="s-note">promedio</div>
       </div>
       <div class="stat-card wide mejor-dia-card">
-        <div class="s-label">🏆 Mejor día</div>
+        <div class="s-label">Mejor día</div>
         <div class="s-value" style="font-size:16px;line-height:1.3">${fechaLarga(mejorDia.date)}</div>
         <div class="s-note">S/. ${mejorDia.total.toFixed(2)} en ventas</div>
       </div>

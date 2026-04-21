@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mi Tiendita - App de Ventas</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232563EB'/><text y='72' x='50' text-anchor='middle' font-size='58'>🛒</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -37,10 +38,10 @@
       </div>
       <div id="pos-grid" class="pos-grid"></div>
       <div id="pos-empty" class="pos-empty">
-        <div class="icon">🏠</div><p>No hay productos activos</p>
+        <p>No hay productos activos</p>
         <small>Ve a Gestionar Productos para agregar</small>
       </div>
-      <button class="btn-nuevo-dia" onclick="confirmNuevoDia()">🔄 Nuevo Día — Resetear Ventas</button>
+      <button class="btn-nuevo-dia" onclick="confirmNuevoDia()">Nuevo Día — Resetear Ventas</button>
     </div>
   </div>
 
@@ -82,8 +83,7 @@
     </div>
     <div class="screen-body">
       <div id="ganancia-badge" class="ganancia-badge" style="display:none">
-        <div><div class="gb-label">GANANCIA NETA DEL DÍA 🎉</div><div class="gb-value" id="r-ganancia">S/. 0.00</div></div>
-        <div style="font-size:36px">💰</div>
+        <div><div class="gb-label">GANANCIA NETA DEL DÍA</div><div class="gb-value" id="r-ganancia">S/. 0.00</div></div>
       </div>
       <div class="stats-grid">
         <div class="stat-card wide"><div class="s-label">Total Ingresos</div><div class="s-value" id="r-total">S/. 0.00</div><div class="s-note" id="r-note">Sin ventas aún</div></div>
@@ -98,14 +98,14 @@
   <!-- SCREEN 4: HISTORIAL -->
   <div class="screen" id="screen-historial">
     <div class="screen-header">
-      <div class="screen-title">📅 Historial</div>
+      <div class="screen-title">Historial</div>
       <div class="screen-subtitle">Registro de días anteriores</div>
     </div>
     <div class="screen-body">
       <div class="hist-summary-bar" id="hist-summary" style="display:none">
         <div class="hist-stat"><div class="hs-label">Total General</div><div class="hs-value" id="hist-total-general">S/. 0.00</div></div>
         <div class="hist-stat"><div class="hs-label">Días</div><div class="hs-value" id="hist-dias">0</div></div>
-        <div class="hist-stat wide"><div class="hs-label">🏆 Mejor día</div><div class="hs-value" style="font-size:13px" id="hist-mejor">—</div></div>
+        <div class="hist-stat wide"><div class="hs-label">Mejor día</div><div class="hs-value" style="font-size:13px" id="hist-mejor">—</div></div>
       </div>
       <div id="historial-list"></div>
     </div>
@@ -114,7 +114,7 @@
   <!-- SCREEN 5: MES -->
   <div class="screen" id="screen-mes">
     <div class="screen-header">
-      <div class="screen-title">📈 Resumen del Mes</div>
+      <div class="screen-title">Resumen del Mes</div>
       <div class="mes-nav">
         <button id="btn-mes-prev" onclick="cambiarMes(-1)">‹</button>
         <span id="mes-label">Mes</span>
@@ -130,7 +130,7 @@
   <!-- SCREEN 6: FINANZAS -->
   <div class="screen" id="screen-finanzas">
     <div class="screen-header">
-      <div class="screen-title">💰 Finanzas</div>
+      <div class="screen-title">Finanzas</div>
       <div class="screen-subtitle">Distribución de tus ganancias hoy</div>
     </div>
     <div class="screen-body">
@@ -141,31 +141,26 @@
       <div class="section-label">Distribución de gastos</div>
       <div class="fin-dist-card">
         <div class="fin-dist-item">
-          <div class="fin-dist-icon">📦</div>
           <div class="fin-dist-label">Costo de productos</div>
           <input type="number" id="fin-costs" class="fin-input" placeholder="0.00" min="0" step="0.50" oninput="updateFinanzasCalc()">
           <div class="fin-dist-pct" id="pct-costs">0%</div>
         </div>
         <div class="fin-dist-item">
-          <div class="fin-dist-icon">🚗</div>
           <div class="fin-dist-label">Transporte</div>
           <input type="number" id="fin-transport" class="fin-input" placeholder="0.00" min="0" step="0.50" oninput="updateFinanzasCalc()">
           <div class="fin-dist-pct" id="pct-transport">0%</div>
         </div>
         <div class="fin-dist-item">
-          <div class="fin-dist-icon">🍔</div>
           <div class="fin-dist-label">Comida / Gastos</div>
           <input type="number" id="fin-food" class="fin-input" placeholder="0.00" min="0" step="0.50" oninput="updateFinanzasCalc()">
           <div class="fin-dist-pct" id="pct-food">0%</div>
         </div>
         <div class="fin-dist-item">
-          <div class="fin-dist-icon">💰</div>
           <div class="fin-dist-label">Ahorros</div>
           <input type="number" id="fin-savings" class="fin-input" placeholder="0.00" min="0" step="0.50" oninput="updateFinanzasCalc()">
           <div class="fin-dist-pct" id="pct-savings">0%</div>
         </div>
         <div class="fin-dist-item">
-          <div class="fin-dist-icon">⚖️</div>
           <div class="fin-dist-label">Otros</div>
           <input type="number" id="fin-other" class="fin-input" placeholder="0.00" min="0" step="0.50" oninput="updateFinanzasCalc()">
           <div class="fin-dist-pct" id="pct-other">0%</div>
@@ -193,7 +188,7 @@
   <!-- SCREEN 7: DESTINO -->
   <div class="screen" id="screen-destino">
     <div class="screen-header">
-      <div class="screen-title">🎯 Destino de Ganancias</div>
+      <div class="screen-title">Destino de Ganancias</div>
       <div class="screen-subtitle">¿Para qué estás trabajando hoy?</div>
     </div>
     <div class="screen-body">
@@ -224,7 +219,7 @@
         <button class="btn-primary" style="width:100%" onclick="addDestino()">＋ Agregar Destino</button>
       </div>
       <div class="section-label">Mis Destinos (<span id="destino-count">0</span>)</div>
-      <div id="destinos-list" class="destino-cards"><div class="no-destinos"><div class="icon">🎯</div><p>Agrega un destino para motivarte</p></div></div>
+      <div id="destinos-list" class="destino-cards"><div class="no-destinos"><p>Agrega un destino para motivarte</p></div></div>
     </div>
   </div>
 </div>

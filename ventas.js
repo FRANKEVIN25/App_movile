@@ -24,7 +24,7 @@ async function addSale(e, id) {
     precio_venta_momento:prod.precio_venta,
     precio_compra_momento:prod.precio_compra, fecha:today
   });
-  if (error) { ventas[id]--; renderPOS(); showToast('❌ Error al guardar venta','danger'); }
+  if (error) { ventas[id]--; renderPOS(); showToast('Error al guardar venta','danger'); }
 }
 
 async function undoSale(e, id) {
@@ -35,7 +35,7 @@ async function undoSale(e, id) {
   const {data,error}=await db.from('ventas').select('id')
     .eq('producto_id',id).eq('fecha',today)
     .order('creado_en',{ascending:false}).limit(1);
-  if (error||!data||!data.length) { ventas[id]++; renderPOS(); showToast('❌ Error al deshacer','danger'); return; }
+  if (error||!data||!data.length) { ventas[id]++; renderPOS(); showToast('Error al deshacer','danger'); return; }
   await db.from('ventas').delete().eq('id',data[0].id);
 }
 
@@ -59,11 +59,15 @@ function renderPOS() {
         </div>
         <div class="pos-card-body">
           <div class="pos-card-name">${esc(p.nombre)}</div>
-          <div class="pos-card-price">S/. ${p.precio_venta.toFixed(2)} c/u</div>
+          <div class="pos-card-row">
+            <div class="pos-card-price">S/. ${p.precio_venta.toFixed(2)}</div>
+            <div class="pos-card-btns">
+              ${cnt>0?`<button class="pos-btn-undo" onclick="undoSale(event,'${p.id}')" title="Deshacer">−</button>`:''}
+              <button class="pos-btn-add" onclick="addSale(event,'${p.id}')">+</button>
+            </div>
+          </div>
           ${cnt>0?`<div class="pos-card-subtotal">= S/. ${sub.toFixed(2)}</div>`:''}
         </div>
-        <button class="pos-card-tap" onclick="addSale(event,'${p.id}')">＋</button>
-        ${cnt>0?`<button class="pos-card-undo" onclick="undoSale(event,'${p.id}')" title="Deshacer">↩</button>`:''}
       </div>`;
   }).join('');
   document.getElementById('pos-total-text').textContent='S/. '+total.toFixed(2);
@@ -73,9 +77,9 @@ function renderPOS() {
 }
 
 function confirmNuevoDia() {
-  showConfirm('🔄 Nuevo Día','Se limpiarán los contadores. Las ventas quedan guardadas en historial. ¿Seguro?',()=>{
+  showConfirm('Nuevo Día','Se limpiarán los contadores. Las ventas quedan guardadas en el historial. ¿Continuar?',()=>{
     archivarDiaActual();
-    ventas={}; renderPOS(); renderResumen(); renderDestinos(); showToast('🌅 ¡Nuevo día iniciado!');
+    ventas={}; renderPOS(); renderResumen(); renderDestinos(); showToast('Nuevo día iniciado');
   });
 }
 
@@ -98,7 +102,7 @@ function renderResumen() {
   document.getElementById('r-ganancia').textContent='S/. '+ganancia.toFixed(2);
   document.getElementById('ganancia-badge').style.display=count>0?'flex':'none';
   const wrap=document.getElementById('resumen-table-wrap');
-  if(!rows.length){wrap.innerHTML='<div class="no-sales"><div class="icon">📊</div><p>Sin ventas registradas hoy</p></div>';return;}
+  if(!rows.length){wrap.innerHTML='<div class="no-sales"><p>Sin ventas registradas hoy</p></div>';return;}
   wrap.innerHTML=`<table class="summary-table"><thead><tr><th>Producto</th><th>Cant.</th><th>Precio</th><th>Subtotal</th><th>Ganancia</th></tr></thead><tbody>
     ${rows.map(r=>`<tr><td style="display:flex;align-items:center;gap:8px"><div class="thumb-wrap" style="width:32px;height:32px;border-radius:6px">${r.imagen_url?imgTag(r.imagen_url):''}</div>${esc(r.name)}</td><td class="td-num">${r.qty}</td><td class="td-num">S/. ${r.pv.toFixed(2)}</td><td class="td-num td-blue">S/. ${r.sv.toFixed(2)}</td><td class="td-num td-green">+S/. ${r.ganancia.toFixed(2)}</td></tr>`).join('')}
     <tr style="font-weight:900;background:var(--surface2)"><td>TOTAL</td><td class="td-num">${count}</td><td></td><td class="td-num td-blue">S/. ${totalVenta.toFixed(2)}</td><td class="td-num td-green">+S/. ${ganancia.toFixed(2)}</td></tr>
@@ -116,18 +120,20 @@ async function cargarDestinos() {
 async function addDestino(){
   const nombre=document.getElementById('dest-nombre').value.trim();
   const meta=parseFloat(document.getElementById('dest-meta').value);
-  if(!nombre)return showToast('⚠️ Escribe el nombre','danger');
-  if(isNaN(meta)||meta<=0)return showToast('⚠️ Monto inválido','danger');
+  if(!nombre)return showToast('Escribe el nombre','danger');
+  if(isNaN(meta)||meta<=0)return showToast('Monto inválido','danger');
   await _pushDestino(nombre,meta);
   document.getElementById('dest-nombre').value='';document.getElementById('dest-meta').value='';
 }
 async function quickDestino(nombre,meta){await _pushDestino(nombre,meta);}
 async function _pushDestino(nombre,meta){
+  if(destinos.find(d=>d.nombre.toLowerCase()===nombre.toLowerCase()))
+    return showToast('Ya existe un destino con ese nombre','danger');
   const emoji=getDestinoIcon(nombre),esFirst=destinos.length===0;
   const{data,error}=await db.from('destinos').insert({nombre,emoji,meta,activo:esFirst}).select().single();
-  if(error){showToast('❌ Error','danger');return;}
+  if(error){showToast('Error','danger');return;}
   destinos.push(data);if(esFirst)activeDestinoId=data.id;
-  renderDestinos();showToast(`🎯 "${nombre}" agregado`);
+  renderDestinos();showToast('"' + nombre + '" agregado');
 }
 async function setActiveDestino(id){
   if(activeDestinoId===id)return;
@@ -140,7 +146,7 @@ function eliminarDestino(id){
     await db.from('destinos').delete().eq('id',id);
     destinos=destinos.filter(d=>d.id!==id);
     if(activeDestinoId===id)activeDestinoId=destinos[0]?.id||null;
-    renderDestinos();showToast('🗑️ Destino eliminado','danger');
+    renderDestinos();showToast('Destino eliminado','danger');
   });
 }
 function actualizarDestinoTotal(){
@@ -153,7 +159,7 @@ function actualizarDestinoTotal(){
 function renderDestinos(){
   const{ganancia}=getTotals();
   document.getElementById('destino-total').textContent='S/. '+ganancia.toFixed(2);
-  document.getElementById('destino-note').textContent=ganancia===0?'Sigue vendiendo 💪':ganancia<20?'¡Buen comienzo! 🚀':'¡Excelente día! 🔥';
+  document.getElementById('destino-note').textContent=ganancia===0?'Sigue vendiendo':ganancia<20?'Buen comienzo':'Excelente día';
   document.getElementById('destino-count').textContent=destinos.length;
   const ad=destinos.find(d=>d.id===activeDestinoId);
   const pw=document.getElementById('progreso-wrap');

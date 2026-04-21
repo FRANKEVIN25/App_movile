@@ -20,17 +20,17 @@ async function crearProductoManual() {
   const nombre = document.getElementById('m-nombre').value.trim();
   const compra = parseFloat(document.getElementById('m-compra').value);
   const venta  = parseFloat(document.getElementById('m-venta').value);
-  if (!nombre)                 return showToast('⚠️ Escribe un nombre','danger');
-  if (isNaN(compra)||compra<0) return showToast('⚠️ Precio compra inválido','danger');
-  if (isNaN(venta)||venta<=0)  return showToast('⚠️ Precio venta inválido','danger');
-  if (venta < compra)          return showToast('⚠️ Venta no puede ser menor que compra','danger');
+  if (!nombre)                 return showToast('Escribe un nombre','danger');
+  if (isNaN(compra)||compra<0) return showToast('Precio compra inválido','danger');
+  if (isNaN(venta)||venta<=0)  return showToast('Precio venta inválido','danger');
+  if (venta < compra)          return showToast('Venta no puede ser menor que compra','danger');
   const { data, error } = await db.from('productos_usuario')
     .insert({ nombre, precio_compra:compra, precio_venta:venta, catalogo_id:null, activo:true })
     .select().single();
-  if (error) { showToast('❌ Error al guardar','danger'); console.error(error); return; }
+  if (error) { showToast('Error al guardar','danger'); console.error(error); return; }
   inventario.push(data);
   ['m-nombre','m-compra','m-venta'].forEach(id=>document.getElementById(id).value='');
-  renderInventario(); renderPOS(); showToast('✅ Producto agregado');
+  renderInventario(); renderPOS(); showToast('Producto agregado');
 }
 
 async function eliminarProducto(id) {
@@ -39,7 +39,7 @@ async function eliminarProducto(id) {
     inventario = inventario.filter(p=>p.id!==id);
     delete ventas[id];
     renderInventario(); renderPOS(); renderResumen();
-    showToast('🗑️ Eliminado','danger');
+    showToast('Eliminado','danger');
   });
 }
 
@@ -50,14 +50,14 @@ async function toggleAgotado(id) {
   await db.from('productos_usuario').update({activo:nuevoActivo}).eq('id',id);
   p.activo = nuevoActivo;
   renderInventario(); renderPOS();
-  showToast(nuevoActivo ? '✅ Reactivado' : '⚠️ Marcado agotado');
+  showToast(nuevoActivo ? 'Reactivado' : 'Marcado agotado');
 }
 
 function renderInventario() {
   const list = document.getElementById('inv-list');
   document.getElementById('inv-count').textContent = inventario.length;
   if (inventario.length === 0) {
-    list.innerHTML = '<div class="inv-empty">📭 Tu inventario está vacío<br><small>Agrega productos desde las categorías</small></div>';
+    list.innerHTML = '<div class="inv-empty">Tu inventario está vacío<br><small>Agrega productos desde las categorías</small></div>';
     return;
   }
   list.innerHTML = inventario.map(p => {
@@ -75,8 +75,8 @@ function renderInventario() {
           </div>
         </div>
         <div class="ii-actions">
-          <button class="btn-icon" onclick="toggleAgotado('${p.id}')" style="background:var(--warning-light);color:var(--warning)">${p.activo?'⚠️':'✅'}</button>
-          <button class="btn-icon" onclick="abrirEditar('${p.id}')" style="background:var(--primary-light);color:var(--primary)">✏️</button>
+          <button class="btn-icon" onclick="toggleAgotado('${p.id}')" style="background:var(--warning-light);color:var(--warning);font-size:11px;font-weight:700">${p.activo?'OFF':'ON'}</button>
+          <button class="btn-icon" onclick="abrirEditar('${p.id}')" style="background:var(--primary-light);color:var(--primary)">✎</button>
           <button class="btn-icon" onclick="eliminarProducto('${p.id}')" style="background:var(--danger-light);color:var(--danger)">✕</button>
         </div>
       </div>`;
@@ -97,8 +97,8 @@ function abrirEditar(id) {
 async function confirmarEditar() {
   const compra = parseFloat(document.getElementById('edit-compra').value);
   const venta  = parseFloat(document.getElementById('edit-venta').value);
-  if (isNaN(compra)||compra<0) return showToast('⚠️ Precio compra inválido','danger');
-  if (isNaN(venta)||venta<=0)  return showToast('⚠️ Precio venta inválido','danger');
+  if (isNaN(compra)||compra<0) return showToast('Precio compra inválido','danger');
+  if (isNaN(venta)||venta<=0)  return showToast('Precio venta inválido','danger');
   await db.from('productos_usuario').update({precio_compra:compra, precio_venta:venta}).eq('id',pendingEditId);
   const p = inventario.find(x=>x.id===pendingEditId);
   p.precio_compra=compra; p.precio_venta=venta;
@@ -191,15 +191,15 @@ function abrirEditarNombreCatalogo(invId) {
 
 async function confirmarEditarNombreCatalogo() {
   const nombre = document.getElementById('edit-cat-nombre').value.trim();
-  if (!nombre) return showToast('⚠️ Escribe un nombre','danger');
+  if (!nombre) return showToast('Escribe un nombre','danger');
   const { error } = await db.from('productos_usuario').update({ nombre }).eq('id', editingCatalogoId);
-  if (error) { showToast('❌ Error al guardar','danger'); return; }
+  if (error) { showToast('Error al guardar','danger'); return; }
   const p = inventario.find(x=>x.id===editingCatalogoId);
   if (p) p.nombre = nombre;
   closeModal('modal-editar-catalogo');
   renderCatalogoGrid(catActual);
   renderInventario();
-  showToast('✅ Nombre actualizado');
+  showToast('Nombre actualizado');
 }
 
 // ── IMAGEN PRODUCTO ────────────────────────────────────────
@@ -213,12 +213,12 @@ function triggerImagenCatalogo(invId) {
 async function handleImagenCatalogo(input) {
   const file = input.files[0];
   if (!file || !editingCatalogoId) return;
-  showToast('⏳ Subiendo imagen...');
+  showToast('Subiendo imagen...');
   let imageUrl;
   try {
     imageUrl = await uploadImageToStorage(file);
   } catch(e) {
-    showToast('❌ Error al subir imagen','danger');
+    showToast('Error al subir imagen','danger');
     console.error(e);
     return;
   }
@@ -230,7 +230,7 @@ async function handleImagenCatalogo(input) {
   renderCatalogoGrid(catActual);
   renderInventario();
   renderPOS();
-  showToast('✅ Imagen actualizada');
+  showToast('Imagen actualizada');
   input.value = '';
 }
 
@@ -264,16 +264,16 @@ async function confirmarNuevoCatalogo() {
   const compra = parseFloat(document.getElementById('nuevo-cat-compra').value);
   const venta  = parseFloat(document.getElementById('nuevo-cat-venta').value);
   if (!nombre)                 return showToast('⚠️ Escribe un nombre','danger');
-  if (isNaN(compra)||compra<0) return showToast('⚠️ Precio compra inválido','danger');
-  if (isNaN(venta)||venta<=0)  return showToast('⚠️ Precio venta inválido','danger');
+  if (isNaN(compra)||compra<0) return showToast('Precio compra inválido','danger');
+  if (isNaN(venta)||venta<=0)  return showToast('Precio venta inválido','danger');
 
   let imagen_url = null;
   if (pendingNuevoCatFile) {
-    showToast('⏳ Subiendo imagen...');
+    showToast('Subiendo imagen...');
     try {
       imagen_url = await uploadImageToStorage(pendingNuevoCatFile);
     } catch(e) {
-      showToast('❌ Error al subir imagen','danger');
+      showToast('Error al subir imagen','danger');
       console.error(e);
       return;
     }
@@ -296,6 +296,6 @@ async function confirmarNuevoCatalogo() {
   renderCatalogoGrid(catActual);
   renderInventario();
   renderPOS();
-  showToast(`✅ "${nombre}" creado y listo para vender`);
+  showToast('"' + nombre + '" creado y listo para vender');
   pendingNuevoCatFile = null;
 }
