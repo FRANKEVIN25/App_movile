@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Tiendita - App de Ventas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">🛍️</div>
+  <button class="sidebar-btn active" id="btn-venta" onclick="switchScreen('venta')"><span class="icon">🏠</span></button>
+  <button class="sidebar-btn" id="btn-productos" onclick="switchScreen('productos')"><span class="icon">📦</span></button>
+  <button class="sidebar-btn" id="btn-resumen" onclick="switchScreen('resumen')"><span class="icon">📊</span></button>
+  <button class="sidebar-btn" id="btn-destino" onclick="switchScreen('destino')" title="Destino"><span class="icon">🎯</span></button>
+  <button class="sidebar-btn" id="btn-historial" onclick="switchScreen('historial')" title="Historial"><span class="icon">📅</span></button>
+  <button class="sidebar-btn" id="btn-mes" onclick="switchScreen('mes')" title="Mes"><span class="icon">📈</span></button>
+  <button class="sidebar-btn" id="btn-finanzas" onclick="switchScreen('finanzas')" title="Finanzas"><span class="icon">💰</span></button>
+  <div class="sidebar-spacer"></div>
+</aside>
+
+<div class="main-content">
+  <!-- SCREEN 1: PUNTO DE VENTA -->
+  <div class="screen active" id="screen-venta">
+    <div class="screen-header">
+      <div class="screen-title">Punto de Venta</div>
+      <div class="screen-subtitle" id="pos-subtitle">Toca un producto para vender</div>
+    </div>
+    <div class="screen-body">
+      <div id="pos-total-bar" class="pos-total-bar" style="display:none">
+        <div><div class="pos-total-label">TOTAL DEL DÍA</div><div class="pos-total-amount" id="pos-total-text">S/. 0.00</div></div>
+        <div style="text-align:right"><div class="pos-total-label">VENDIDOS</div><div class="pos-total-amount" id="pos-count-text">0</div></div>
+      </div>
+      <div id="pos-grid" class="pos-grid"></div>
+      <div id="pos-empty" class="pos-empty">
+        <div class="icon">🏠</div><p>No hay productos activos</p>
+        <small>Ve a Gestionar Productos para agregar</small>
+      </div>
+      <button class="btn-nuevo-dia" onclick="confirmNuevoDia()">🔄 Nuevo Día — Resetear Ventas</button>
+    </div>
+  </div>
+
+  <!-- SCREEN 2: GESTIONAR PRODUCTOS -->
+  <div class="screen" id="screen-productos">
+    <div class="screen-header">
+      <div class="screen-title" id="prod-screen-title">Gestionar Productos</div>
+      <div class="screen-subtitle" id="prod-screen-sub">Elige una categoría del catálogo</div>
+    </div>
+    <div class="screen-body">
+      <div class="prod-main" id="prod-main">
+        <div class="section-label">Catálogo por Categoría</div>
+        <div class="cat-grid">
+          <div class="cat-card" onclick="openCategoria('dulces')"><div class="c-icon">🍬</div><div class="c-name">Dulces</div><div class="c-count" id="cc-dulces"> </div></div>
+          <div class="cat-card" onclick="openCategoria('ropa')"><div class="c-icon">👕</div><div class="c-name">Ropa</div><div class="c-count" id="cc-ropa"> </div></div>
+          <div class="cat-card" onclick="openCategoria('comida')"><div class="c-icon">🍱</div><div class="c-name">Comida</div><div class="c-count" id="cc-comida"> </div></div>
+          <div class="cat-card" onclick="openCategoria('accesorios')"><div class="c-icon">⌚</div><div class="c-name">Accesorios</div><div class="c-count" id="cc-accesorios"> </div></div>
+        </div>
+        <div class="section-label">Mi Inventario (<span id="inv-count">0</span>)</div>
+        <div id="inv-list"></div>
+      </div>
+
+      <div class="prod-view" id="prod-cat-view">
+        <div class="cat-header">
+          <button class="btn-back" onclick="cerrarCategoria()">←</button>
+          <div><div style="font-size:18px;font-weight:800" id="cat-view-title">Categoría</div>
+          <div style="font-size:12px;color:var(--text2)">Toca para agregar a tu inventario</div></div>
+        </div>
+        <div id="catalogo-grid" class="catalogo-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN 3: RESUMEN -->
+  <div class="screen" id="screen-resumen">
+    <div class="screen-header">
+      <div class="screen-title">Resumen del Día</div>
+      <div class="screen-subtitle" id="resumen-fecha">Hoy</div>
+    </div>
+    <div class="screen-body">
+      <div id="ganancia-badge" class="ganancia-badge" style="display:none">
+        <div><div class="gb-label">GANANCIA NETA DEL DÍA 🎉</div><div class="gb-value" id="r-ganancia">S/. 0.00</div></div>
+        <div style="font-size:36px">💰</div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card wide"><div class="s-label">Total Ingresos</div><div class="s-value" id="r-total">S/. 0.00</div><div class="s-note" id="r-note">Sin ventas aún</div></div>
+        <div class="stat-card"><div class="s-label">Unidades</div><div class="s-value" id="r-qty">0</div><div class="s-note">vendidas</div></div>
+        <div class="stat-card"><div class="s-label">Promedio</div><div class="s-value" id="r-avg">S/. 0</div><div class="s-note">por unidad</div></div>
+      </div>
+      <div class="section-label" style="margin-top:18px">Detalle por Producto</div>
+      <div id="resumen-table-wrap"></div>
+    </div>
+  </div>
+
+  <!-- SCREEN 4: HISTORIAL -->
+  <div class="screen" id="screen-historial">
+    <div class="screen-header">
+      <div class="screen-title">📅 Historial</div>
+      <div class="screen-subtitle">Registro de días anteriores</div>
+    </div>
+    <div class="screen-body">
+      <div class="hist-summary-bar" id="hist-summary" style="display:none">
+        <div class="hist-stat"><div class="hs-label">Total General</div><div class="hs-value" id="hist-total-general">S/. 0.00</div></div>
+        <div class="hist-stat"><div class="hs-label">Días</div><div class="hs-value" id="hist-dias">0</div></div>
+        <div class="hist-stat wide"><div class="hs-label">🏆 Mejor día</div><div class="hs-value" style="font-size:13px" id="hist-mejor">—</div></div>
+      </div>
+      <div id="historial-list"></div>
+    </div>
+  </div>
+
+  <!-- SCREEN 5: MES -->
+  <div class="screen" id="screen-mes">
+    <div class="screen-header">
+      <div class="screen-title">📈 Resumen del Mes</div>
+      <div class="mes-nav">
+        <button id="btn-mes-prev" onclick="cambiarMes(-1)">‹</button>
+        <span id="mes-label">Mes</span>
+        <button id="btn-mes-next" onclick="cambiarMes(1)">›</button>
+      </div>
+    </div>
+    <div class="screen-body">
+      <div id="mes-stats"></div>
+      <div id="mes-tabla-wrap"></div>
+    </div>
+  </div>
+
+  <!-- SCREEN 6: FINANZAS -->
+  <div class="screen" id="screen-finanzas">
+    <div class="screen-header">
+      <div class="screen-title">💰 Finanzas</div>
+      <div class="screen-subtitle">Distribución de tus ganancias hoy</div>
+    </div>
+    <div class="screen-body">
+      <div class="fin-total-card">
+        <div class="fin-label">Ganancia Neta del Día</div>
+        <div class="fin-total-amount" id="fin-total">S/. 0.00</div>
+      </div>
+      <div class="section-label">Distribución de gastos</div>
+      <div class="fin-dist-card">
+        <div class="fin-dist-item">
+          <div class="fin-dist-icon">📦</div>
+          <div class="fin-dist-label">Costo de productos</div>
+          <input type="number" id="fin-costs" class="fin-input" placeholder="0.00" min="0" step="0.50" oninput="updateFinanzasCalc()">
+          <div class="fin-dist-pct" id="pct-costs">0%</div>
+        </div>
+        <div class="fin-dist-item">
+          <div class="fin-dist-icon">🚗</div>
+          <div class="fin-dist-label">Transporte</div>
+          <input type="number" id="fin-transport" class="fin-input" placeholder="0.00" min="0" step="0.50" oninput="updateFinanzasCalc()">
+          <div class="fin-dist-pct" id="pct-transport">0%</div>
+        </div>
+        <div class="fin-dist-item">
+          <div class="fin-dist-icon">🍔</div>
+          <div class="fin-dist-label">Comida / Gastos</div>
+          <input type="number" id="fin-food" class="fin-input" placeholder="0.00" min="0" step="0.50" oninput="updateFinanzasCalc()">
+          <div class="fin-dist-pct" id="pct-food">0%</div>
+        </div>
+        <div class="fin-dist-item">
+          <div class="fin-dist-icon">💰</div>
+          <div class="fin-dist-label">Ahorros</div>
+          <input type="number" id="fin-savings" class="fin-input" placeholder="0.00" min="0" step="0.50" oninput="updateFinanzasCalc()">
+          <div class="fin-dist-pct" id="pct-savings">0%</div>
+        </div>
+        <div class="fin-dist-item">
+          <div class="fin-dist-icon">⚖️</div>
+          <div class="fin-dist-label">Otros</div>
+          <input type="number" id="fin-other" class="fin-input" placeholder="0.00" min="0" step="0.50" oninput="updateFinanzasCalc()">
+          <div class="fin-dist-pct" id="pct-other">0%</div>
+        </div>
+      </div>
+      <div class="fin-neta-card">
+        <div class="fin-neta-label">Ganancia neta (después de gastos)</div>
+        <div class="fin-neta-value" id="fin-neta">S/. 0.00</div>
+      </div>
+      <div class="section-label">Gráfico de distribución</div>
+      <div class="fin-chart-wrap">
+        <canvas id="fin-pie" width="160" height="160"></canvas>
+        <div class="fin-legend">
+          <div class="fin-legend-item"><span class="fin-dot" style="background:#e63946"></span>Costos productos</div>
+          <div class="fin-legend-item"><span class="fin-dot" style="background:#f4a261"></span>Transporte</div>
+          <div class="fin-legend-item"><span class="fin-dot" style="background:#f72585"></span>Comida</div>
+          <div class="fin-legend-item"><span class="fin-dot" style="background:#2ec4b6"></span>Ahorros</div>
+          <div class="fin-legend-item"><span class="fin-dot" style="background:#9ca3af"></span>Otros</div>
+          <div class="fin-legend-item"><span class="fin-dot" style="background:#4361ee"></span>Sin asignar</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN 7: DESTINO -->
+  <div class="screen" id="screen-destino">
+    <div class="screen-header">
+      <div class="screen-title">🎯 Destino de Ganancias</div>
+      <div class="screen-subtitle">¿Para qué estás trabajando hoy?</div>
+    </div>
+    <div class="screen-body">
+      <div class="destino-header-card">
+        <div class="dh-label">Ganancia neta de hoy</div>
+        <div class="dh-amount" id="destino-total">S/. 0.00</div>
+        <div class="dh-note" id="destino-note">Sigue vendiendo 💪</div>
+      </div>
+      <div class="section-label">Progreso hacia tu meta activa</div>
+      <div class="progreso-container" id="progreso-wrap" style="display:none">
+        <div class="progreso-top"><span class="progreso-label" id="progreso-label-text">Sin meta</span><span class="progreso-pct" id="progreso-pct">0%</span></div>
+        <div class="progreso-bar"><div class="progreso-fill" id="progreso-fill" style="width:0%"></div></div>
+        <div class="progreso-amounts"><span id="progreso-actual">S/. 0.00 ganado</span><span id="progreso-meta">Meta: S/. 0.00</span></div>
+      </div>
+      <div class="section-label">Nuevo Destino</div>
+      <div class="servicio-form">
+        <div class="form-group"><label>Nombre del servicio / meta</label><input type="text" id="dest-nombre" placeholder="ej. Spotify, Luz, Ahorro..." maxlength="30"></div>
+        <div class="form-group"><label>Monto meta (S/.)</label><input type="number" id="dest-meta" placeholder="45.00" min="0" step="1"></div>
+        <div class="section-label" style="margin-top:0">Accesos rápidos</div>
+        <div class="servicio-grid">
+          <div class="servicio-chip" onclick="quickDestino('🎵 Spotify',17.90)"><span class="sc-icon">🎵</span>Spotify</div>
+          <div class="servicio-chip" onclick="quickDestino('📱 Internet',60)"><span class="sc-icon">📱</span>Internet</div>
+          <div class="servicio-chip" onclick="quickDestino('💡 Luz',80)"><span class="sc-icon">💡</span>Luz</div>
+          <div class="servicio-chip" onclick="quickDestino('🍕 Comida',50)"><span class="sc-icon">🍕</span>Comida</div>
+          <div class="servicio-chip" onclick="quickDestino('🚌 Pasaje',10)"><span class="sc-icon">🚌</span>Pasaje</div>
+          <div class="servicio-chip" onclick="quickDestino('💰 Ahorro',100)"><span class="sc-icon">💰</span>Ahorro</div>
+        </div>
+        <button class="btn-primary" style="width:100%" onclick="addDestino()">＋ Agregar Destino</button>
+      </div>
+      <div class="section-label">Mis Destinos (<span id="destino-count">0</span>)</div>
+      <div id="destinos-list" class="destino-cards"><div class="no-destinos"><div class="icon">🎯</div><p>Agrega un destino para motivarte</p></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: AGREGAR DESDE CATÁLOGO -->
+<div class="modal-overlay" id="modal-agregar">
+  <div class="modal">
+    <div class="modal-img-preview" id="modal-img-preview">
+      <img id="modal-preview-img" src="" alt="" style="display:none">
+    </div>
+    <h3 id="modal-agregar-titulo">Agregar producto</h3>
+    <p class="modal-sub">Define tus precios para este producto</p>
+    <div class="form-group"><label>Precio de Compra (S/.) — lo que pagaste</label><input type="number" id="modal-compra" placeholder="1.50" min="0" step="0.10"></div>
+    <div class="form-group"><label>Precio de Venta (S/.) — lo que cobras</label><input type="number" id="modal-venta" placeholder="3.00" min="0" step="0.10"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('modal-agregar')">Cancelar</button>
+      <button class="btn-confirm" onclick="confirmarAgregarCatalogo()">Agregar ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: EDITAR PRECIOS -->
+<div class="modal-overlay" id="modal-editar">
+  <div class="modal">
+    <h3>Editar Precios</h3>
+    <p class="modal-sub" id="modal-editar-sub"> </p>
+    <div class="form-group"><label>Precio de Compra (S/.)</label><input type="number" id="edit-compra" min="0" step="0.10"></div>
+    <div class="form-group"><label>Precio de Venta (S/.)</label><input type="number" id="edit-venta" min="0" step="0.10"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('modal-editar')">Cancelar</button>
+      <button class="btn-confirm" onclick="confirmarEditar()">Guardar ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: CONFIRMAR -->
+<div class="modal-overlay" id="modal-confirm">
+  <div class="modal">
+    <h3 id="confirm-title">¿Confirmar?</h3>
+    <p class="confirm-msg" id="confirm-msg">Esta acción no se puede deshacer.</p>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('modal-confirm')">Cancelar</button>
+      <button class="btn-confirm danger" id="confirm-ok-btn">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: EDITAR NOMBRE CATÁLOGO -->
+<div class="modal-overlay" id="modal-editar-catalogo">
+  <div class="modal">
+    <h3>Editar Nombre</h3>
+    <p class="modal-sub">Cambia el nombre de este producto</p>
+    <div class="form-group"><label>Nombre</label><input type="text" id="edit-cat-nombre" maxlength="40" placeholder="Nombre del producto"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('modal-editar-catalogo')">Cancelar</button>
+      <button class="btn-confirm" onclick="confirmarEditarNombreCatalogo()">Guardar ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: NUEVO PRODUCTO CATÁLOGO -->
+<div class="modal-overlay" id="modal-nuevo-catalogo">
+  <div class="modal">
+    <h3>Nuevo Producto</h3>
+    <p class="modal-sub">Agrega un producto a esta categoría</p>
+    <div class="modal-img-preview" onclick="document.getElementById('file-nuevo-cat').click()" style="cursor:pointer">
+      <img id="nuevo-cat-preview-img" src="" alt="" style="display:none;position:relative;z-index:1;width:100%;height:100%;object-fit:cover">
+      <div class="ci-nuevo-tap">📷<br>Toca para agregar imagen</div>
+    </div>
+    <input type="file" id="file-nuevo-cat" accept="image/*" style="display:none" onchange="previewNuevoCatImagen(this)">
+    <div class="form-group" style="margin-top:12px"><label>Nombre del producto</label><input type="text" id="nuevo-cat-nombre" placeholder="ej. Torta de chocolate" maxlength="40"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Precio Compra (S/.)</label><input type="number" id="nuevo-cat-compra" placeholder="1.50" min="0" step="0.10"></div>
+      <div class="form-group"><label>Precio Venta (S/.)</label><input type="number" id="nuevo-cat-venta" placeholder="3.00" min="0" step="0.10"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('modal-nuevo-catalogo')">Cancelar</button>
+      <button class="btn-confirm" onclick="confirmarNuevoCatalogo()">Crear ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: DETALLE DÍA -->
+<div class="modal-overlay" id="modal-detalle-dia">
+  <div class="modal" style="max-height:82vh;overflow-y:auto">
+    <h3 id="dd-fecha">Detalle del Día</h3>
+    <div class="dd-stats">
+      <div class="dd-stat"><div class="dds-label">Total Ventas</div><div class="dds-value" id="dd-total">S/. 0.00</div></div>
+      <div class="dd-stat"><div class="dds-label">Ganancia</div><div class="dds-value td-green" id="dd-ganancia">S/. 0.00</div></div>
+    </div>
+    <p class="modal-sub" id="dd-count" style="margin-bottom:12px">0 unidades vendidas</p>
+    <table class="summary-table">
+      <thead><tr><th>Producto</th><th>Cant.</th><th>Total</th><th>Ganancia</th></tr></thead>
+      <tbody id="dd-tabla"></tbody>
+    </table>
+    <div class="modal-actions" style="margin-top:16px">
+      <button class="btn-confirm" onclick="closeModal('modal-detalle-dia')">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- INPUT OCULTO: subir imagen a ítem existente del catálogo -->
+<input type="file" id="file-img-catalogo" accept="image/*" style="display:none" onchange="handleImagenCatalogo(this)">
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+<script src="inventario.js"></script>
+<script src="ventas.js"></script>
+<script src="ui.js"></script>
+<script src="historial.js"></script>
+<script src="mes.js"></script>
+<script src="finanzas.js"></script>
+</body>
+</html>
